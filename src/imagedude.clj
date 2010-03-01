@@ -40,3 +40,29 @@
 (defn compare-pixels [pixels1 pixels2]
   (reduce + (map compare-pixel pixels1 pixels2)))
 
+; TODO test
+(defn load-all-images-and-grab [image-files]
+  (for [filename image-files]
+    (let [image (load-image filename)
+          pixels (grab-pixels image)]
+      [image pixels])))
+
+; TODO test
+(defn find-best-match [master-pixels image-pixels-pairs]
+  (nth (reduce (fn [ [image best] pair]
+                 (let [diff (compare-pixels (nth pair 1) master-pixels)]
+                   (if (< diff best)
+                     [(nth pair 0) diff]
+                     [image best])))
+               [nil Integer/MAX_VALUE]
+               image-pixels-pairs) 0))
+
+; TODO test
+(defn create-image [master-filename images-dir]
+  (let [master-image (load-image master-filename)
+        width (mod (.getWidth master-image) square-width)
+        height (mod (.getHeight master-image) square-height)
+        image-pairs (load-all-images-and-grab)]   ; TODO specify image files
+    (for [y (range 0 width square-height)
+          x (range 0 width square-width)]
+      [x y])))
